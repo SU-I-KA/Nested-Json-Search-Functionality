@@ -8,6 +8,7 @@ const App = () => {
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState('all')
 
+  // fetching all countries data using AXIOS
   const fetchData = async () => {
     try {
       const { data } = await axios.get('/v2/all')
@@ -18,10 +19,12 @@ const App = () => {
     }
   }
 
+  // checking if it's an object
   const isObject = (obj) => {
     return Object.prototype.toString.call(obj) === '[object Object]'
   }
 
+  // only strings needed for compersion
   const isString = (item) => {
     let status = false
     const recursive = (val) => {
@@ -45,6 +48,7 @@ const App = () => {
     return status
   }
 
+  // search countries
   const search = (rows) => {
     let columns = null
     if (filter === 'all') {
