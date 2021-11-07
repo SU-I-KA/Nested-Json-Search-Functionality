@@ -3,6 +3,7 @@ import axios from './axios'
 
 const App = () => {
   const [countries, setCountries] = useState([])
+  const [query, setQuery] = useState('')
 
   const fetchData = async () => {
     try {
@@ -14,12 +15,53 @@ const App = () => {
     }
   }
 
+  const isObject = (obj) => {
+    return Object.prototype.toString.call(obj) === '[object Object]'
+  }
+
+  const isString = (item) => {
+    let status = false
+    const recursive = (val) => {
+      if (Array.isArray(val)) {
+        //console.log(val)
+        val?.map?.((str) => recursive(str))
+      }
+      if (isObject(val)) {
+        for (const key in val) {
+          let value = val[key]
+          //console.log(value)
+          recursive(value)
+        }
+      }
+      if (val?.toString()?.toLowerCase()?.includes(query.toLowerCase())) {
+        status = true
+        return
+      }
+    }
+    recursive(item)
+    return status
+  }
+
+  const search = (rows) => {
+    const columns = rows?.[0] && Object.keys(rows[0])
+    //console.log(columns)
+    return rows?.filter((row) =>
+      columns?.some?.((column) => isString(row[column]))
+    )
+  }
+
   useEffect(() => {
     fetchData()
   }, [])
 
   return (
     <div className='container'>
+      <input
+        type='text'
+        // value={query}
+        placeholder='Enter a search value....'
+        onChange={(e) => setQuery(e.target.value)}
+      />
       <table>
         <thead>
           <tr>
@@ -30,7 +72,7 @@ const App = () => {
           </tr>
         </thead>
         <tbody>
-          {countries?.map?.((country) => {
+          {search(countries)?.map?.((country) => {
             const { name, capital, region, flag } = country
             return (
               <tr key={name}>
