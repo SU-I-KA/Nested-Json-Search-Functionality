@@ -4,6 +4,7 @@ import axios from './axios'
 const App = () => {
   const [countries, setCountries] = useState([])
   const [query, setQuery] = useState('')
+  const [filter, setFilter] = useState('all')
 
   const fetchData = async () => {
     try {
@@ -43,7 +44,12 @@ const App = () => {
   }
 
   const search = (rows) => {
-    const columns = rows?.[0] && Object.keys(rows[0])
+    let columns = null
+    if (filter === 'all') {
+      columns = rows?.[0] && Object.keys(rows[0])
+    } else {
+      columns = ['capital']
+    }
     //console.log(columns)
     return rows?.filter((row) =>
       columns?.some?.((column) => isString(row[column]))
@@ -54,6 +60,7 @@ const App = () => {
     fetchData()
   }, [])
 
+  const filterBy = ['all', 'capital']
   return (
     <div className='container'>
       <input
@@ -62,6 +69,20 @@ const App = () => {
         placeholder='Enter a search value....'
         onChange={(e) => setQuery(e.target.value)}
       />
+      filter by:{' '}
+      {filterBy &&
+        filterBy.map((item) => (
+          <div key={item}>
+            <input
+              type='radio'
+              name='filterBy'
+              value={item}
+              checked={item === filter}
+              onChange={(e) => setFilter(e.target.value)}
+            />
+            <label>{item}</label>
+          </div>
+        ))}
       <table>
         <thead>
           <tr>
